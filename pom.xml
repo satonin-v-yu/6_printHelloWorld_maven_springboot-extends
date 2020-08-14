@@ -56,11 +56,78 @@
 
 			<!--с помощью мавен плагина(com.spotify:docker-maven-plugin) создаём образ (генерация Dockerfile по параметрам конфигурацию плагина) (Dockerfile вместе с jar перемещяються в папку target/docker/)-->
 			<!--Setting Docker set enabled "Expose daemon on tcp://localhost:2375 without TLS"-->
+<!--			<plugin>-->
+<!--				<groupId>com.spotify</groupId>-->
+<!--				<artifactId>docker-maven-plugin</artifactId>-->
+<!--				<version>0.4.5</version>-->
+
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>package</phase>-->
+<!--						<goals>-->
+<!--							<goal>build</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+
+<!--				<configuration>-->
+<!--					<imageName>valyadksbot/valya</imageName>-->
+<!--					<baseImage>adoptopenjdk/openjdk11:jre-11.0.7_10-alpine</baseImage>-->
+<!--					<imageTags>${project.version}</imageTags>-->
+<!--					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>-->
+<!--					<resources>-->
+<!--						<resource>-->
+<!--							<targetPath>/</targetPath>-->
+<!--							<directory>${project.build.directory}</directory>-->
+<!--							<include>${project.build.finalName}.jar</include>-->
+<!--						</resource>-->
+<!--					</resources>-->
+
+<!--				</configuration>-->
+<!--				<dependencies>-->
+<!--					<dependency>-->
+<!--						<groupId>javax.activation</groupId>-->
+<!--						<artifactId>javax.activation-api</artifactId>-->
+<!--						<version>1.2.0</version>-->
+<!--						<scope>compile</scope>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
+<!--			</plugin>-->
+
+			<!--phase:validate. Перемещаем src/main/docker/ в target/-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>docker-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/docker/</directory>
+									<filtering>false</filtering>
+									<excludes>
+										<exclude>**/*.yml</exclude>
+									</excludes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--phase:package. Создаём docker образ на базе target/dockerfile-->
+			<!--Setting Docker set enabled "Expose daemon on tcp://localhost:2375 without TLS"-->
 			<plugin>
 				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.5</version>
-
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>${dockerfile-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -69,20 +136,10 @@
 						</goals>
 					</execution>
 				</executions>
-
 				<configuration>
-					<imageName>valyadksbot/valya</imageName>
-					<baseImage>adoptopenjdk/openjdk11:jre-11.0.7_10-alpine</baseImage>
-					<imageTags>${project.version}</imageTags>
-					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.jar</include>
-						</resource>
-					</resources>
-
+					<tag>${project.version}</tag>
+					<repository>project</repository>
+					<contextDirectory>${project.build.directory}</contextDirectory>
 				</configuration>
 				<dependencies>
 					<dependency>
