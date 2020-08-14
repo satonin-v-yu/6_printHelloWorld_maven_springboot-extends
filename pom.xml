@@ -94,11 +94,11 @@
 <!--				</dependencies>-->
 <!--			</plugin>-->
 
-			<!--phase:validate. Перемещаем src/main/docker/ в target/-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>${maven-resources-plugin.version}</version>
+				<!--phase:validate. Перемещаем src/main/docker/ в target/docker-->
 				<executions>
 					<execution>
 						<id>docker-resources</id>
@@ -107,7 +107,8 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>target/</outputDirectory>
+<!--							<outputDirectory>target/docker</outputDirectory>-->
+							<outputDirectory>target</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/docker/</directory>
@@ -119,15 +120,52 @@
 							</resources>
 						</configuration>
 					</execution>
+					<!--phase:package. Копируем target/${project.build.finalName}.jar в target/docker/-->
+<!--					<execution>-->
+<!--						<id>jar-resources</id>-->
+<!--						<phase>package</phase>-->
+<!--						<goals>-->
+<!--							<goal>copy-resources</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<outputDirectory>target/docker</outputDirectory>-->
+<!--							<resources>-->
+<!--								<resource>-->
+<!--									<directory>target</directory>-->
+<!--									<filtering>true</filtering>-->
+<!--									<includes>-->
+<!--										<include>${project.build.finalName}.jar</include>-->
+<!--									</includes>-->
+<!--								</resource>-->
+<!--							</resources>-->
+<!--						</configuration>-->
+<!--					</execution>-->
 				</executions>
 			</plugin>
 
-			<!--phase:package. Создаём docker образ на базе target/dockerfile-->
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-jar-plugin</artifactId>-->
+<!--				<version>3.1.0</version>-->
+<!--				<configuration>-->
+<!--					<outputDirectory>target/docker</outputDirectory>-->
+<!--					<archive>-->
+<!--						<manifest>-->
+<!--							<addClasspath>true</addClasspath>-->
+<!--							<classpathPrefix>lib/</classpathPrefix>-->
+<!--							<mainClass>com.example.springboot.Application</mainClass>-->
+<!--						</manifest>-->
+<!--					</archive>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+
+			<!--phase:package. Создаём docker образ на базе target/docker/dockerfile-->
 			<!--Setting Docker set enabled "Expose daemon on tcp://localhost:2375 without TLS"-->
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>${dockerfile-maven-plugin.version}</version>
+
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -136,9 +174,11 @@
 						</goals>
 					</execution>
 				</executions>
+
 				<configuration>
 					<tag>${project.version}</tag>
-					<repository>project</repository>
+					<repository>valyadksbot/valya</repository>
+<!--					<contextDirectory>${project.build.directory}/docker</contextDirectory>-->
 					<contextDirectory>${project.build.directory}</contextDirectory>
 				</configuration>
 				<dependencies>
