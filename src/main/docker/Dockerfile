@@ -9,9 +9,12 @@ ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
 RUN adduser -D -s /bin/sh valya
 WORKDIR /home/valya
 
+ADD entrypoint.sh entrypoint.sh
+RUN chmod 755 entrypoint.sh && chown valya:valya entrypoint.sh
+USER valya
 
 ADD *.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["./entrypoint.sh"]
 
 EXPOSE 8080
