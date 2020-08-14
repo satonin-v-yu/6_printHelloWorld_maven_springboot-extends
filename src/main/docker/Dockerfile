@@ -7,7 +7,7 @@ ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
 
 WORKDIR /tmp
 
-ADD *.jar /tmp/app.jar
+ADD *.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
