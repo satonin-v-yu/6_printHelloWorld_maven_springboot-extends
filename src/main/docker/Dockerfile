@@ -7,8 +7,8 @@ ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
 
 # Add a jhipster user to run our application so that it doesn't need to run as root
 RUN adduser -D -s /bin/sh valya
-
 WORKDIR /home/valya
+
 
 ADD *.jar app.jar
 
