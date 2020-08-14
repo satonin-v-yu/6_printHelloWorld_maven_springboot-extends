@@ -178,7 +178,7 @@
 				<configuration>
 					<tag>${project.version}</tag>
 					<repository>valyadksbot/valya</repository>
-<!--					<contextDirectory>${project.build.directory}/docker</contextDirectory>-->
+					<!--<contextDirectory>${project.build.directory}/docker</contextDirectory>-->
 					<contextDirectory>${project.build.directory}</contextDirectory>
 				</configuration>
 				<dependencies>
